@@ -66,6 +66,117 @@ def safe_request(url, max_retries=3, delay=1.0):
                 return None
 
 
+# ── Gist History (persistent DOI tracking) ─────────────────
+
+GIST_FILENAME = "study_tracker_history.json"
+
+
+def get_gist(gist_id, token):
+    """Fetch the history Gist and return its parsed content."""
+    url = f"https://api.github.com/gists/{gist_id}"
+    req = urllib.request.Request(url, headers={
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            content = data.get("files", {}).get(GIST_FILENAME, {}).get("content", "{}")
+            return json.loads(content)
+    except Exception as e:
+        print(f"  ⚠ Could not fetch Gist history: {e}")
+        return {}
+
+
+def update_gist(gist_id, token, history):
+    """Update the history Gist with new entries."""
+    url = f"https://api.github.com/gists/{gist_id}"
+    payload = json.dumps({
+        "files": {
+            GIST_FILENAME: {
+                "content": json.dumps(history, indent=2, default=str)
+            }
+        }
+    }).encode("utf-8")
+
+    req = urllib.request.Request(url, data=payload, method="PATCH", headers={
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            print(f"  ✅ Gist history updated ({len(history)} total papers tracked)")
+            return True
+    except Exception as e:
+        print(f"  ⚠ Could not update Gist history: {e}")
+        return False
+
+
+def create_gist(token):
+    """Create a new history Gist and return its ID."""
+    url = "https://api.github.com/gists"
+    payload = json.dumps({
+        "description": "Study Tracker - Paper History (DOIs & metadata)",
+        "public": False,
+        "files": {
+            GIST_FILENAME: {
+                "content": json.dumps({}, indent=2)
+            }
+        }
+    }).encode("utf-8")
+
+    req = urllib.request.Request(url, data=payload, method="POST", headers={
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            gist_id = data["id"]
+            gist_url = data["html_url"]
+            print(f"  ✅ Created new history Gist: {gist_url}")
+            print(f"     Add GIST_ID={gist_id} to your GitHub Secrets!")
+            return gist_id
+    except Exception as e:
+        print(f"  ⚠ Could not create Gist: {e}")
+        return None
+
+
+def filter_seen_papers(papers, history):
+    """Remove papers that already exist in the history."""
+    new_papers = []
+    for p in papers:
+        pid = paper_id(p["title"])
+        doi = p.get("doi", "")
+        # Check by DOI or by title hash
+        if doi and doi in history:
+            continue
+        if pid in history:
+            continue
+        new_papers.append(p)
+    return new_papers
+
+
+def add_papers_to_history(papers, history):
+    """Add papers to the history dict, keyed by DOI or title hash."""
+    today = datetime.date.today().isoformat()
+    for p in papers:
+        doi = p.get("doi", "")
+        pid = paper_id(p["title"])
+        key = doi if doi else pid
+        history[key] = {
+            "title": p["title"],
+            "authors": ", ".join(p.get("authors", [])[:3]),
+            "source": p.get("source", ""),
+            "date": p.get("date", ""),
+            "url": p.get("url", ""),
+            "added": today,
+        }
+    return history
+
+
 # ── PubMed Search ───────────────────────────────────────────
 
 def search_pubmed(queries, days_back=7, max_results=20):
@@ -637,11 +748,32 @@ def main():
         print(f"   Found {len(papers)} papers\n")
         all_papers.extend(papers)
 
-    # Deduplicate
+    # Deduplicate within this run
     if settings.get("deduplicate", True):
         before = len(all_papers)
         all_papers = deduplicate(all_papers)
         print(f"📋 {len(all_papers)} unique papers (removed {before - len(all_papers)} duplicates)\n")
+
+    # ── Gist History: filter out previously seen papers ──
+    gist_token = os.environ.get("GIST_TOKEN", "")
+    gist_id = os.environ.get("GIST_ID", "")
+    history = {}
+
+    if gist_token:
+        print("📜 Checking paper history...")
+        if not gist_id:
+            print("  No GIST_ID set — creating a new Gist...")
+            gist_id = create_gist(gist_token)
+        if gist_id:
+            history = get_gist(gist_id, gist_token)
+            before_filter = len(all_papers)
+            all_papers = filter_seen_papers(all_papers, history)
+            skipped = before_filter - len(all_papers)
+            if skipped:
+                print(f"  Skipped {skipped} previously seen papers")
+            print(f"  {len(all_papers)} new papers to report\n")
+    else:
+        print("📜 No GIST_TOKEN set — history tracking disabled (all papers included)\n")
 
     # Format
     today = datetime.date.today().strftime("%B %d, %Y")
@@ -662,7 +794,13 @@ def main():
         print(text_body)
         return
 
-    send_email(subject, html_body, text_body, config)
+    sent = send_email(subject, html_body, text_body, config)
+
+    # ── Update Gist with newly reported papers ──
+    if sent and gist_token and gist_id and all_papers:
+        print("\n📜 Updating paper history...")
+        history = add_papers_to_history(all_papers, history)
+        update_gist(gist_id, gist_token, history)
 
 
 if __name__ == "__main__":
