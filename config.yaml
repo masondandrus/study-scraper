@@ -16,14 +16,33 @@ pubmed:
   # search syntax including MeSH terms, boolean operators, and
   # field tags like [Title/Abstract].
   queries:
-    - "stress enhanced fear learning"
-    - "SEFL AND (fear OR stress)"
-    - "gene environment interaction AND (addiction OR substance use)"
-    - "heterogeneous stock rats AND (behavior OR genetics)"
-    - "RATTACA OR (reduced complexity cross AND rat)"
+    # ── Core research areas (tightened) ──
+    - "\"stress enhanced fear learning\"[Title/Abstract]"
+    - "SEFL[Title/Abstract] AND (fear OR stress)"
+    - "gene environment interaction[Title/Abstract] AND (addiction OR substance use)"
+    - "heterogeneous stock rats[Title/Abstract] AND (behavior OR genetics)"
+    - "RATTACA[Title/Abstract] OR (\"reduced complexity cross\"[Title/Abstract] AND rat)"
+
+    # ── Fear conditioning & epigenetics ──
+    - "fear conditioning AND (prefrontal cortex OR amygdala) AND rat"
+    - "fear conditioning[Title/Abstract] AND (epigenetic OR gene expression)"
+    - "epigenetic AND (fear OR stress) AND (rodent OR rat OR mouse)"
+    - "fear extinction AND (prefrontal cortex OR infralimbic OR prelimbic)"
+
+    # ── Addiction neuroscience ──
+    - "cue reactivity[Title/Abstract] AND stress AND (genetic OR genomic)"
+    - "incubation AND (fear OR drug seeking)"
+    - "adolescent social isolation[Title/Abstract] AND (brain OR behavior OR gene expression)"
+
+    # ── PTSD + SUD comorbidity ──
     - "PTSD AND substance use disorder AND (neurobiology OR neurocircuit OR mechanism)"
     - "fear extinction AND (drug seeking OR relapse OR reinstatement)"
+    - "trauma AND (opioid OR cocaine OR ethanol) AND (self-administration OR reinstatement) AND rat"
+    - "trauma[Title/Abstract] AND opioid[Title/Abstract] AND (brain OR neurobiology OR rodent)"
     - "trauma AND addiction AND (animal model OR preclinical)"
+
+    # ── Methods ──
+    - "DeepLabCut[Title/Abstract] AND (fear OR freezing)"
 
 biorxiv:
   # bioRxiv/medRxiv API. Searches titles and abstracts.
@@ -33,21 +52,39 @@ biorxiv:
     - animal-behavior-and-cognition
   queries:
     - "stress enhanced fear learning"
+    - "SEFL fear stress"
     - "gene environment interaction addiction"
-    - "adolescent social isolation"
-    - "fear conditioning epigenetic"
-    - "cue reactivity stress genetic"
     - "heterogeneous stock rats"
+    - "RATTACA"
+    - "fear conditioning amygdala prefrontal"
+    - "fear conditioning epigenetic"
+    - "fear extinction drug seeking relapse"
+    - "PTSD substance use neurobiology"
+    - "epigenetic fear stress rodent"
+    - "incubation fear drug seeking"
+    - "adolescent social isolation brain"
+    - "trauma opioid self-administration reinstatement"
+    - "trauma opioid neurobiology"
+    - "trauma addiction animal model preclinical"
 
 google_scholar:
   # Google Scholar via SerpAPI (requires SERPAPI_KEY secret).
   # If no API key is set, Google Scholar is skipped gracefully.
   queries:
-    - "stress-enhanced fear learning"
+    - "\"stress-enhanced fear learning\""
+    - "SEFL stress fear"
     - "gene-environment interaction addiction vulnerability"
-    - "adolescent social isolation gene expression brain"
-    - "fear conditioning epigenetic regulation"
     - "heterogeneous stock rats behavioral genetics"
+    - "RATTACA rats"
+    - "fear conditioning epigenetic regulation rodent"
+    - "fear extinction prefrontal cortex amygdala rat"
+    - "fear extinction drug seeking relapse reinstatement"
+    - "PTSD substance use disorder neurocircuit"
+    - "trauma opioid self-administration reinstatement rat"
+    - "trauma opioid neurobiology rodent"
+    - "trauma addiction animal model preclinical"
+    - "incubation fear drug seeking"
+    - "epigenetic stress fear rodent"
 
 # ------------------------------------------------------------
 # Email settings
