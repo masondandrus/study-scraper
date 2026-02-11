@@ -1,0 +1,72 @@
+# ============================================================
+# Study Tracker Configuration
+# ============================================================
+# Customize your search terms, sources, and email settings here.
+# The tracker runs weekly via GitHub Actions and emails you a
+# digest of newly published papers matching your queries.
+
+# ------------------------------------------------------------
+# Search queries by source
+# ------------------------------------------------------------
+# Each source has a list of queries. Papers from the last 7 days
+# matching ANY of these queries will be included in your digest.
+
+pubmed:
+  # PubMed uses NCBI E-utilities. You can use standard PubMed
+  # search syntax including MeSH terms, boolean operators, and
+  # field tags like [Title/Abstract].
+  queries:
+    - "stress enhanced fear learning"
+    - "SEFL AND (fear OR stress)"
+    - "gene environment interaction AND (addiction OR substance use)"
+    - "adolescent social isolation AND (brain OR behavior OR gene expression)"
+    - "fear conditioning AND (epigenetic OR gene expression)"
+    - "cue reactivity AND stress AND (genetic OR genomic)"
+    - "heterogeneous stock rats AND (behavior OR genetics)"
+    - "prefrontal cortex AND epigenetic AND (stress OR fear)"
+    - "RATTACA OR (reduced complexity cross AND rat)"
+    - "DeepLabCut AND (fear OR freezing)"
+
+biorxiv:
+  # bioRxiv/medRxiv API. Searches titles and abstracts.
+  # Keep queries simpler here (no field tags).
+  collections:
+    - neuroscience
+    - animal-behavior-and-cognition
+  queries:
+    - "stress enhanced fear learning"
+    - "gene environment interaction addiction"
+    - "adolescent social isolation"
+    - "fear conditioning epigenetic"
+    - "cue reactivity stress genetic"
+    - "heterogeneous stock rats"
+
+google_scholar:
+  # Google Scholar via SerpAPI (requires SERPAPI_KEY secret).
+  # If no API key is set, Google Scholar is skipped gracefully.
+  queries:
+    - "stress-enhanced fear learning"
+    - "gene-environment interaction addiction vulnerability"
+    - "adolescent social isolation gene expression brain"
+    - "fear conditioning epigenetic regulation"
+    - "heterogeneous stock rats behavioral genetics"
+
+# ------------------------------------------------------------
+# Email settings
+# ------------------------------------------------------------
+email:
+  # These values are overridden by GitHub Secrets if set.
+  # You can also set them here for local testing.
+  sender: ""          # Your Gmail address (or set SENDER_EMAIL secret)
+  recipient: ""       # Where to send digest (or set RECIPIENT_EMAIL secret)
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+
+# ------------------------------------------------------------
+# General settings
+# ------------------------------------------------------------
+settings:
+  days_back: 7          # How many days back to search
+  max_results_per_query: 20  # Max papers per query per source
+  deduplicate: true     # Remove duplicate papers across queries
+  sort_by: "date"       # "date" or "relevance"
