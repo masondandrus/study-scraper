@@ -1,99 +1,83 @@
 # ============================================================
 # Study Tracker Configuration
 # ============================================================
-# Customize your search terms, sources, and email settings here.
-# The tracker runs weekly via GitHub Actions and emails you a
-# digest of newly published papers matching your queries.
 
 # ------------------------------------------------------------
 # Search queries by source
 # ------------------------------------------------------------
-# Each source has a list of queries. Papers from the last 7 days
-# matching ANY of these queries will be included in your digest.
 
 pubmed:
-  # PubMed uses NCBI E-utilities. You can use standard PubMed
-  # search syntax including MeSH terms, boolean operators, and
-  # field tags like [Title/Abstract].
   queries:
-    # ── Core research areas (tightened) ──
+    # ── Core research areas ──
     - "\"stress enhanced fear learning\"[Title/Abstract]"
-    - "SEFL[Title/Abstract] AND (fear OR stress)"
-    - "gene environment interaction[Title/Abstract] AND (addiction OR substance use)"
-    - "heterogeneous stock rats[Title/Abstract] AND (behavior OR genetics)"
+    - "SEFL[Title/Abstract] AND (fear conditioning OR fear learning)"
+    - "gene environment interaction[Title/Abstract] AND (addiction OR substance use disorder OR drug self-administration)"
+    - "heterogeneous stock rats[Title/Abstract]"
     - "RATTACA[Title/Abstract] OR (\"reduced complexity cross\"[Title/Abstract] AND rat)"
 
-    # ── Fear conditioning & epigenetics ──
-    - "fear conditioning AND (prefrontal cortex OR amygdala) AND rat"
-    - "fear conditioning[Title/Abstract] AND (epigenetic OR gene expression)"
-    - "epigenetic AND (fear OR stress) AND (rodent OR rat OR mouse)"
-    - "fear extinction AND (prefrontal cortex OR infralimbic OR prelimbic)"
+    # ── Fear conditioning & epigenetics (scoped to neuro) ──
+    - "fear conditioning[Title/Abstract] AND (prefrontal cortex OR amygdala OR hippocampus) AND rat"
+    - "fear conditioning[Title/Abstract] AND (epigenetic OR gene expression) AND brain"
+    - "epigenetic[Title/Abstract] AND (fear conditioning OR fear extinction OR fear learning)"
+    - "fear extinction[Title/Abstract] AND (prefrontal cortex OR infralimbic OR prelimbic)"
 
     # ── Addiction neuroscience ──
     - "cue reactivity[Title/Abstract] AND stress AND (genetic OR genomic)"
-    - "incubation AND (fear OR drug seeking)"
+    - "incubation[Title/Abstract] AND (drug seeking OR cocaine seeking OR heroin seeking)"
     - "adolescent social isolation[Title/Abstract] AND (brain OR behavior OR gene expression)"
 
     # ── PTSD + SUD comorbidity ──
-    - "PTSD AND substance use disorder AND (neurobiology OR neurocircuit OR mechanism)"
-    - "fear extinction AND (drug seeking OR relapse OR reinstatement)"
-    - "trauma AND (opioid OR cocaine OR ethanol) AND (self-administration OR reinstatement) AND rat"
-    - "trauma[Title/Abstract] AND opioid[Title/Abstract] AND (brain OR neurobiology OR rodent)"
-    - "trauma AND addiction AND (animal model OR preclinical)"
+    - "PTSD[Title/Abstract] AND substance use disorder[Title/Abstract] AND (neurobiology OR neurocircuit OR mechanism)"
+    - "fear extinction[Title/Abstract] AND (drug seeking OR relapse OR reinstatement)"
+    - "trauma[Title/Abstract] AND (opioid OR cocaine OR ethanol) AND (self-administration OR reinstatement) AND rat"
+    - "trauma[Title/Abstract] AND opioid[Title/Abstract] AND (brain OR neurobiology) AND (rat OR mouse OR rodent)"
+    - "trauma[Title/Abstract] AND addiction[Title/Abstract] AND (animal model OR preclinical)"
 
     # ── Methods ──
     - "DeepLabCut[Title/Abstract] AND (fear OR freezing)"
 
 biorxiv:
-  # bioRxiv/medRxiv API. Searches titles and abstracts.
-  # Keep queries simpler here (no field tags).
   collections:
     - neuroscience
     - animal-behavior-and-cognition
   queries:
     - "stress enhanced fear learning"
-    - "SEFL fear stress"
-    - "gene environment interaction addiction"
+    - "SEFL fear conditioning"
+    - "gene environment addiction self-administration"
     - "heterogeneous stock rats"
     - "RATTACA"
-    - "fear conditioning amygdala prefrontal"
-    - "fear conditioning epigenetic"
+    - "fear conditioning amygdala prefrontal rat"
+    - "fear conditioning epigenetic brain"
+    - "fear extinction prefrontal infralimbic"
     - "fear extinction drug seeking relapse"
     - "PTSD substance use neurobiology"
-    - "epigenetic fear stress rodent"
-    - "incubation fear drug seeking"
-    - "adolescent social isolation brain"
+    - "incubation drug seeking cocaine"
+    - "adolescent social isolation brain behavior"
     - "trauma opioid self-administration reinstatement"
-    - "trauma opioid neurobiology"
-    - "trauma addiction animal model preclinical"
+    - "trauma opioid neurobiology rat"
 
 google_scholar:
-  # Google Scholar via SerpAPI (requires SERPAPI_KEY secret).
-  # If no API key is set, Google Scholar is skipped gracefully.
+  # Google Scholar needs VERY specific exact-phrase queries.
+  # Broad terms produce massive noise. Less is more here.
   queries:
     - "\"stress-enhanced fear learning\""
-    - "SEFL stress fear"
-    - "gene-environment interaction addiction vulnerability"
-    - "heterogeneous stock rats behavioral genetics"
-    - "RATTACA rats"
-    - "fear conditioning epigenetic regulation rodent"
-    - "fear extinction prefrontal cortex amygdala rat"
-    - "fear extinction drug seeking relapse reinstatement"
-    - "PTSD substance use disorder neurocircuit"
-    - "trauma opioid self-administration reinstatement rat"
-    - "trauma opioid neurobiology rodent"
-    - "trauma addiction animal model preclinical"
-    - "incubation fear drug seeking"
-    - "epigenetic stress fear rodent"
+    - "\"stress enhanced fear learning\""
+    - "\"SEFL\" \"fear conditioning\""
+    - "\"heterogeneous stock rats\""
+    - "\"RATTACA\" rat"
+    - "\"fear conditioning\" \"epigenetic\" brain rodent"
+    - "\"fear extinction\" \"drug seeking\" reinstatement"
+    - "\"fear extinction\" \"prefrontal cortex\" rat"
+    - "PTSD \"substance use disorder\" neurocircuit mechanism"
+    - "trauma opioid \"self-administration\" reinstatement rat"
+    - "\"incubation\" \"drug seeking\" cocaine"
 
 # ------------------------------------------------------------
 # Email settings
 # ------------------------------------------------------------
 email:
-  # These values are overridden by GitHub Secrets if set.
-  # You can also set them here for local testing.
-  sender: ""          # Your Gmail address (or set SENDER_EMAIL secret)
-  recipient: ""       # Where to send digest (or set RECIPIENT_EMAIL secret)
+  sender: ""
+  recipient: ""
   smtp_server: "smtp.gmail.com"
   smtp_port: 587
 
@@ -101,7 +85,7 @@ email:
 # General settings
 # ------------------------------------------------------------
 settings:
-  days_back: 7          # How many days back to search
-  max_results_per_query: 20  # Max papers per query per source
-  deduplicate: true     # Remove duplicate papers across queries
-  sort_by: "date"       # "date" or "relevance"
+  days_back: 7
+  max_results_per_query: 20
+  deduplicate: true
+  sort_by: "date"
