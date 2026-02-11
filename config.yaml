@@ -19,13 +19,11 @@ pubmed:
     - "stress enhanced fear learning"
     - "SEFL AND (fear OR stress)"
     - "gene environment interaction AND (addiction OR substance use)"
-    - "adolescent social isolation AND (brain OR behavior OR gene expression)"
-    - "fear conditioning AND (epigenetic OR gene expression)"
-    - "cue reactivity AND stress AND (genetic OR genomic)"
     - "heterogeneous stock rats AND (behavior OR genetics)"
-    - "prefrontal cortex AND epigenetic AND (stress OR fear)"
     - "RATTACA OR (reduced complexity cross AND rat)"
-    - "DeepLabCut AND (fear OR freezing)"
+    - "PTSD AND substance use disorder AND (neurobiology OR neurocircuit OR mechanism)"
+    - "fear extinction AND (drug seeking OR relapse OR reinstatement)"
+    - "trauma AND addiction AND (animal model OR preclinical)"
 
 biorxiv:
   # bioRxiv/medRxiv API. Searches titles and abstracts.
