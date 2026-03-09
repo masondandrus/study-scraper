@@ -33,9 +33,6 @@ pubmed:
     - "trauma[Title/Abstract] AND opioid[Title/Abstract] AND (brain OR neurobiology) AND (rat OR mouse OR rodent)"
     - "trauma[Title/Abstract] AND addiction[Title/Abstract] AND (animal model OR preclinical)"
 
-    # ── Methods ──
-    - "DeepLabCut[Title/Abstract] AND (fear OR freezing)"
-
 biorxiv:
   collections:
     - neuroscience
