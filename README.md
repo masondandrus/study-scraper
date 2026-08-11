@@ -1,8 +1,6 @@
-# 📚 Study Tracker – Weekly Literature Digest
+# Weekly Literature Digest
 
 Automatically searches PubMed, bioRxiv/medRxiv, and Google Scholar for recent papers in your subfield, then emails you a formatted weekly digest.
-
-Runs for **free** via GitHub Actions — no server needed.
 
 ---
 
